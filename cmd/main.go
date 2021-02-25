@@ -1,20 +1,20 @@
 package main
 
 import (
-	"fmt"
+	"github.com/Hank-Kuo/dcard-backend/pkg/middleware/limiterMemory"
+	"github.com/gin-gonic/gin"
+	"time"
 )
 
-func say(s string) {
-	for i := 0; i < 1000; i++ {
-		fmt.Println(s)
-	}
-
-}
-
 func main() {
-	go say("World") // 太快了
-	//time.Sleep(time.Millisecond / 10)
-	say("Hello")
+	r := gin.New()
+
+	r.Use(limiterMemory.RateLimiter(func() (int, time.Duration) {
+		return 10, time.Hour * 1
+	}))
+
+	r.GET("/", func(c *gin.Context) {})
+	r.Run(":8888")
 }
 
 /*

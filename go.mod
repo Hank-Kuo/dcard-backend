@@ -1,4 +1,4 @@
-module dcardBackend
+module github.com/Hank-Kuo/dcard-backend
 
 go 1.14
 
