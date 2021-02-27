@@ -100,8 +100,8 @@ You can select the cache(```ServerWithRedisLimiter```) or redis(```ServerWithLoc
 - Script
 ```
 make docker-build-image # Step 1 
-make docker-run # only run server, not redis ( Step 2)
-make docker-compose # (Step 2)
+make docker-run # only run server ( for memory mode ), not run redis ( Step 2 )
+make docker-compose # (Step 2), then open localhost:8080, you can see the result
 ```  
 
 ## Test
