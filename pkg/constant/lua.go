@@ -1,17 +1,16 @@
 package middleware
 
-// for Redis Lua Script atomic
-
-const Script = `
+const LuaScript = `
 local key = KEYS[1]
 local now = tonumber(ARGV[1])
 local numberIp = tonumber(ARGV[2])
-local period = tonumber(ARGV[3])
+local duration = tonumber(ARGV[3])
 local hostInfo = redis.call('HGETALL', key)
 local reset = tonumber(hostInfo[4])
 local result = {}
+
 if #hostInfo == 0 or reset < now then
-    reset = now + period
+    reset = now + duration
     redis.call('HMSET', key, "count", 1, "reset", reset)
     result[1] = numberIp - 1
     result[2] = reset

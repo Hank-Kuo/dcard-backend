@@ -1,0 +1,28 @@
+version: "3"
+
+# Define services
+services:
+  # App Service
+  app:
+    server:
+      # Configuration for building the docker image for the service
+      build:
+        context: . # Use an image built from the specified dockerfile in the current directory.
+        dockerfile: Dockerfile
+      ports:
+        - "8080:8080" # Forward the exposed port 8080 on the container to port 8080 on the host machine
+      volumes:
+        - .:/code # 把當前資料夾 mount 掛載進去 container，這樣你可以直接在本地端專案資料夾改動檔案，container 裡面的檔案也會更動也不用重新 build image！
+      depends_on:
+        - redis
+      entrypoint: go run main.go
+      restart: always
+      networks: # Networks to join (Services on the same network can communicate with each other using their name)
+        - backend
+    redis:
+      image: "redis:alpine" # 從 Docker Hub registry 來的 image
+      restart: always
+      networks:
+        - backend
+networks:
+  backend:

@@ -87,3 +87,24 @@ func RateLimiter(param func() (int, time.Duration)) gin.HandlerFunc {
 		c.Next()
 	}
 }
+
+/*
+// test race condition
+func main() {
+	var wg sync.WaitGroup
+	a := NewLimiter(10, time.Hour)
+
+	n := 1000
+	wg.Add(n)
+
+	for i := 1; i <= n; i++ {
+		go func() {
+			allow := a.Allow("127.0.0.1")
+			if allow {
+				fmt.Println(i)
+			}
+			wg.Done()
+		}()
+	}
+}
+*/

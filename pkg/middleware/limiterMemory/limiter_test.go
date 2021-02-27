@@ -93,25 +93,4 @@ func TestLimiter(t *testing.T) {
 		assert.Equal(remaining, 0, "It should be 0")
 		fmt.Printf("Status code: %d \t remain: %s \t reset time: %s \n", resp.StatusCode, resp.Header.Get("X-RateLimit-Remaining"), resp.Header.Get("X-RateLimit-Reset"))
 	})
-
 }
-
-/*
-func main() {
-	var wg sync.WaitGroup
-	a := NewLimiter(10, time.Hour)
-
-	n := 1000
-	wg.Add(n)
-
-	for i := 1; i <= n; i++ {
-		go func() {
-			allow := a.Allow("127.0.0.1")
-			if allow {
-				fmt.Println(i)
-			}
-			wg.Done()
-		}()
-	}
-}
-*/
