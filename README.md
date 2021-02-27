@@ -87,7 +87,7 @@ In here, I run the simple server with middleware I made. The entry point is in `
 You can select the cache(```ServerWithRedisLimiter```) or redis(```ServerWithLocalLimiter```) type. 
 
 - Script: 
-    - ```make run```
+    - ```make run``` ( If you want to redis mode, you need to set the configuration in main.go or ```make docker-compose```) 
 
 - Success case
     - the limit rate doesn't exceed the number of we expected.
@@ -95,7 +95,15 @@ You can select the cache(```ServerWithRedisLimiter```) or redis(```ServerWithLoc
 - Error case 
     - the limit rate exceeds the number of we expected.
     - ![](https://i.imgur.com/4jV1g6i.png)
-    
+
+## Docker
+- Script
+```
+make docker-build-image # Step 1 
+make docker-run # only run server, not redis ( Step 2)
+make docker-compose # (Step 2)
+```  
+
 ## Test
 In the test case, I simulate the server can only accept 10 requests in an hour, then the script will send parael request to server. 
 
@@ -104,6 +112,7 @@ Then the 3 test case. First is after 1 request, the request status code should b
 - Script: 
     - ```make test ./pkg/middleware/limiterMemory # test middleware```
     - ```make test ./pkg/middleware/limiterRedis # test middleware```
+        - make sure you redis host is 127.0.0.1:6379 and no password.     
 
 - Result:
     - ![](https://i.imgur.com/Yxpe5WM.png)
