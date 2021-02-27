@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+	"sync"
 	"time"
 
 	"github.com/Hank-Kuo/dcard-backend/pkg/middleware/limiterMemory"
@@ -11,7 +13,7 @@ import (
 
 func NewClient() *redis.Client {
 	client := redis.NewClient(&redis.Options{
-		Addr:     "127.0.0.1:6379",
+		Addr:     "redis:6379",
 		Password: "",
 		DB:       0,
 	})
@@ -23,22 +25,51 @@ func ServerWithLocalLimiter() {
 	r.Use(limiterMemory.RateLimiter(func() (int, time.Duration) {
 		return 1000, time.Hour * 1
 	}))
-	r.GET("/", func(c *gin.Context) {})
+	r.GET("/", func(c *gin.Context) {
+		c.JSON(200, gin.H{
+			"狀態": "ok",
+		})
+	})
 
-	r.Run(":8888")
+	r.Run(":8080")
 }
 
 func ServerWithRedisLimiter() {
 	r := gin.Default()
 	client := NewClient()
 	r.Use(limiterRedis.RateLimiter(func() (*redis.Client, int, time.Duration) {
-		return client, 10, time.Hour * 1
+		return client, 1000, time.Hour * 1
 	}))
 
-	r.GET("/", func(c *gin.Context) {})
-	r.Run(":8888")
+	r.GET("/", func(c *gin.Context) {
+		c.JSON(200, gin.H{
+			"狀態": "ok",
+		})
+	})
+	r.Run(":8080")
+}
+
+func TestRace() {
+	var wg sync.WaitGroup
+	a := limiterMemory.NewLimiter(10, time.Hour)
+
+	n := 1000
+	wg.Add(n)
+
+	for i := 1; i <= n; i++ {
+		go func() {
+			allow := a.Allow("127.0.0.1")
+			if allow {
+				fmt.Println(i)
+			}
+			wg.Done()
+		}()
+	}
 }
 
 func main() {
-	ServerWithLocalLimiter()
+	ServerWithRedisLimiter() // run redis type
+	// ServerWithLocalLimiter() // run local type
+
+	// TestRace()
 }

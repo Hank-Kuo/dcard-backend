@@ -13,7 +13,7 @@ BINARY_LINUX=$(BINARY_NAME)_linux
 
 ifeq (test, $(firstword $(MAKECMDGOALS)))
   runargs := $(wordlist 2, $(words $(MAKECMDGOALS)), $(MAKECMDGOALS))
-  $(eval $(testfile):;@true)
+  $(eval $(runargs):;@true)
 endif
 
 all: test build
@@ -22,7 +22,7 @@ run:
 build:
 	$(GOBUILD) -o $(BINARY_NAME) $(ENTRY_POINT) -v
 test:
-	$(GOTEST) -v $(testfile)/...
+	$(GOTEST) -v ./$(runargs)/...
 clean:
 	$(GOCLEAN)
 	-rm -f $(BINARY_NAME)
@@ -38,5 +38,9 @@ build-window:
 build-darwin:
 	CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 $(GOBUILD) -o $(BINARY_UNIX) $(ENTRY_POINT)
 
-docker-build:
-	docker run --rm -it -v "$(GOPATH)":/go -w /go/src/bitbucket.org/rsohlich/makepost golang:latest go build -o "$(BINARY_UNIX)" -v
+docker-build-image:
+	docker build -t dcard-backend . --no-cache 
+docker-run:
+	docker run -d -p 8080:8080 dcard-backend
+docker-compose:
+	docker-compose up -d
