@@ -58,7 +58,8 @@ make build-window
 make build-linux
 
 # docker 
-docker-run # run docker 
+make docker-build-image
+make docker-run # run docker 
 make docker-compose # run docker compose 
 ```
 
