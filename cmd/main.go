@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"os"
 	"sync"
 	"time"
 
@@ -9,11 +10,13 @@ import (
 	"github.com/Hank-Kuo/dcard-backend/pkg/middleware/limiterRedis"
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis"
+	"github.com/joho/godotenv"
 )
 
 func NewClient() *redis.Client {
+	redisURL := os.Getenv("REDIS_URL")
 	client := redis.NewClient(&redis.Options{
-		Addr:     "redis:6379",
+		Addr:     redisURL, // "redis:6379"
 		Password: "",
 		DB:       0,
 	})
@@ -68,6 +71,7 @@ func TestRace() {
 }
 
 func main() {
+	godotenv.Load()
 	ServerWithRedisLimiter() // run redis type
 	// ServerWithLocalLimiter() // run local type
 

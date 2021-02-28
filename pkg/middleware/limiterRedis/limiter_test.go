@@ -3,6 +3,7 @@ package limiterRedis
 import (
 	"fmt"
 	"net/http"
+	"os"
 	"runtime"
 	"strconv"
 	"sync"
@@ -11,12 +12,15 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis"
+	"github.com/joho/godotenv"
 	"github.com/stretchr/testify/assert"
 )
 
 func NewClient() *redis.Client {
+	godotenv.Load()
+	redisURL := os.Getenv("REDIS_URL_TEST")
 	client := redis.NewClient(&redis.Options{
-		Addr:     "127.0.0.1:6379",
+		Addr:     redisURL,
 		Password: "",
 		DB:       0,
 	})
